@@ -19,10 +19,10 @@ function StatusCols() {
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      addNewCol()
+    if (event.key === "Enter") {
+      addNewCol();
     }
-  }
+  };
   const handleInput = (e) => {
     const { value } = e.target;
     setInput(value);
@@ -39,7 +39,7 @@ function StatusCols() {
 
   const createOrEditTask = (newTask, statusId, taskId) => {
     const updateDate = [...cols];
-
+    console.log("newTask", newTask);
     //create task
     if (taskId === null) {
       updateDate[statusId].tasks.push(newTask);
@@ -49,7 +49,6 @@ function StatusCols() {
     else {
       if (statusId !== selectedTask.statusId) {
         //task status is chenged
-        console.log(statusId, selectedTask.statusId);
         console.log("task status is chenged");
         updateDate[selectedTask.statusId].tasks.splice(taskId, 1);
         updateDate[statusId].tasks.push(newTask);
@@ -65,8 +64,15 @@ function StatusCols() {
     closeModal();
   };
 
+  const deleteTask = (statusId, taskId) => {
+    const updateData = [...cols];
+    updateData[statusId].tasks.splice(taskId, 1);
+    setCols(updateData)
+  };
+
   return (
     <div className="container">
+
       {cols.map((item, index) => {
         return (
           <div className="item" key={index}>
@@ -88,6 +94,11 @@ function StatusCols() {
                     >
                       edit
                     </button>
+                    <button
+                      onClick={() => deleteTask(index, i )}
+                    >
+                      delete
+                    </button>
                   </div>
                 );
               })}
@@ -96,7 +107,13 @@ function StatusCols() {
         );
       })}
       <div className="item">
-        <input value={input} type="text" onChange={handleInput} onKeyDown={handleKeyDown}/>
+        <input
+          value={input}
+          type="text"
+          placeholder="status name"
+          onChange={handleInput}
+          onKeyDown={handleKeyDown}
+        />
         <button onClick={addNewCol}>new status col</button>
       </div>
       {isModal && selectedTask && (
