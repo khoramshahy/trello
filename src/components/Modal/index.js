@@ -41,7 +41,7 @@ function Modal({ handleClose, handleSubmit, task, statusList }) {
           <br />
   
           <button onClick={handleClose}>close</button>
-          <button onClick={() => handleSubmit({name:state.name}, state.statusId, task.taskId)}>
+          <button onClick={() => {if(state.name)handleSubmit({name:state.name}, state.statusId, task.taskId)}}>
             save changes
           </button>
         </div>
