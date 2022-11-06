@@ -17,16 +17,24 @@ function StatusCols() {
     setSelectedTask(taskInfo);
     setIsModal(true);
   };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      addNewCol()
+    }
+  }
   const handleInput = (e) => {
     const { value } = e.target;
     setInput(value);
   };
 
   const addNewCol = () => {
-    const updateCol = [...cols];
-    updateCol.push({ name: input, tasks: [] });
-    setCols(updateCol);
-    setInput("");
+    if (input) {
+      const updateCol = [...cols];
+      updateCol.push({ name: input, tasks: [] });
+      setCols(updateCol);
+      setInput("");
+    }
   };
 
   const createOrEditTask = (newTask, statusId, taskId) => {
@@ -35,23 +43,21 @@ function StatusCols() {
     //create task
     if (taskId === null) {
       updateDate[statusId].tasks.push(newTask);
-      console.log("new task")
-
+      console.log("new task");
     }
     //edit task
     else {
-        if(statusId !== selectedTask.statusId){
-            //task status is chenged
-            console.log(statusId, selectedTask.statusId)
-            console.log("task status is chenged")
-            updateDate[selectedTask.statusId].tasks.splice(taskId,1);
-            updateDate[statusId].tasks.push(newTask);
-
-        } else{
-            //update task
-            updateDate[statusId].tasks[taskId] = newTask;
-            console.log("update")
-        }
+      if (statusId !== selectedTask.statusId) {
+        //task status is chenged
+        console.log(statusId, selectedTask.statusId);
+        console.log("task status is chenged");
+        updateDate[selectedTask.statusId].tasks.splice(taskId, 1);
+        updateDate[statusId].tasks.push(newTask);
+      } else {
+        //update task
+        updateDate[statusId].tasks[taskId] = newTask;
+        console.log("update");
+      }
     }
 
     setCols(updateDate);
@@ -65,7 +71,9 @@ function StatusCols() {
         return (
           <div className="item" key={index}>
             <span className="title">{item.name}</span>
-            <button onClick={() => openModal({ statusId: index, taskId: null })}>
+            <button
+              onClick={() => openModal({ statusId: index, taskId: null })}
+            >
               add new task
             </button>
             <div className="task">
@@ -88,7 +96,7 @@ function StatusCols() {
         );
       })}
       <div className="item">
-        <input value={input} type="text" onChange={handleInput} />
+        <input value={input} type="text" onChange={handleInput} onKeyDown={handleKeyDown}/>
         <button onClick={addNewCol}>new status col</button>
       </div>
       {isModal && selectedTask && (
