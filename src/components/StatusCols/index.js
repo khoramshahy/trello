@@ -4,7 +4,9 @@ import Modal from "../Modal";
 import { useState } from "react";
 
 function StatusCols() {
-  const [cols, setCols] = useState([]);
+  const [cols, setCols] = useState(
+    JSON.parse(localStorage.getItem("data")) || []
+  );
   const [input, setInput] = useState("");
   const [isModal, setIsModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -64,67 +66,85 @@ function StatusCols() {
     closeModal();
   };
 
+  const deleteColumn = (statusId) => {
+    const updateData = [...cols];
+    updateData.splice(statusId, 1);
+    setCols(updateData);
+  };
+
   const deleteTask = (statusId, taskId) => {
     const updateData = [...cols];
     updateData[statusId].tasks.splice(taskId, 1);
-    setCols(updateData)
+    setCols(updateData);
+  };
+
+  const save = () => {
+    if (cols) {
+      localStorage.setItem("data", JSON.stringify(cols));
+    }
   };
 
   return (
-    <div className="container">
+    <>
+      {cols.length !== 0 && <button onClick={save}>save trello data</button>}
 
-      {cols.map((item, index) => {
-        return (
-          <div className="item" key={index}>
-            <span className="title">{item.name}</span>
-            <button
-              onClick={() => openModal({ statusId: index, taskId: null })}
-            >
-              add new task
-            </button>
-            <div className="task">
-              {item.tasks.map((task, i) => {
-                return (
-                  <div key={i}>
-                    <span>{task.name} </span>
-                    <button
-                      onClick={() =>
-                        openModal({ statusId: index, taskId: i, ...task })
-                      }
-                    >
-                      edit
-                    </button>
-                    <button
-                      onClick={() => deleteTask(index, i )}
-                    >
-                      delete
-                    </button>
-                  </div>
-                );
-              })}
+      <div className="container">
+        {cols.map((item, index) => {
+          return (
+            <div className="item" key={index}>
+              <span className="title">{item.name}</span>
+              <button
+                onClick={() => openModal({ statusId: index, taskId: null })}
+              >
+                add new task
+              </button>
+              <button
+                onClick={() => deleteColumn(index)}
+              >
+                delete
+              </button>
+              <div className="task">
+                {item.tasks.map((task, i) => {
+                  return (
+                    <div key={i}>
+                      <span>{task.name} </span>
+                      <button
+                        onClick={() =>
+                          openModal({ statusId: index, taskId: i, ...task })
+                        }
+                      >
+                        edit
+                      </button>
+                      <button onClick={() => deleteTask(index, i)}>
+                        delete
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        );
-      })}
-      <div className="item">
-        <input
-          value={input}
-          type="text"
-          placeholder="status name"
-          onChange={handleInput}
-          onKeyDown={handleKeyDown}
-        />
-        <button onClick={addNewCol}>new status col</button>
+          );
+        })}
+        <div className="item">
+          <input
+            value={input}
+            type="text"
+            placeholder="status name"
+            onChange={handleInput}
+            onKeyDown={handleKeyDown}
+          />
+          <button onClick={addNewCol}>new status col</button>
+        </div>
+        {isModal && selectedTask && (
+          <Modal
+            handleClose={closeModal}
+            handleSubmit={createOrEditTask}
+            task={selectedTask}
+            statusList={cols}
+          />
+        )}
       </div>
-      {isModal && selectedTask && (
-        <Modal
-          handleClose={closeModal}
-          handleSubmit={createOrEditTask}
-          task={selectedTask}
-          statusList={cols}
-        />
-      )}
-    </div>
+    </>
   );
 }
 

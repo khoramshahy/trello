@@ -1,6 +1,5 @@
 .container{
     display: flex;   
-    overflow-y: scroll;
 }
 
 .item{
@@ -19,13 +18,18 @@
 
 .task{
     flex-direction: row;
+    margin: 5px;
+
 }
 
-.task{
+input{
+    margin-right: 5px;
+}
+
+textarea{
+    width: 100%;
     margin: 5px;
 }
-
-
 .modal {
     position: fixed;
     top: 0;
@@ -43,4 +47,6 @@
     left:50%;
     transform: translate(-50%,-50%);
     text-align: center;
+    width:400px;
+    padding: 20px;
   }
